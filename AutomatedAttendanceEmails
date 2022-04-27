@@ -1,0 +1,138 @@
+//@OnlyCurrentDoc
+/*How the script works:
+Script runs daily, between 11am and 12pm
+We use "named ranges" in google sheets to tell the script what cells to search through for attendance.
+We create a nested for loop to loop through each cell. We check if the cell equals 'X' or 'x', meaning they're attending
+If they're attending we go to the send email function, where we check for the date of the event
+We send an email out if today is the same day as the day before the event (AKA Reminder Date)*/
+
+
+function readThroughAttendance() { //this is the starting/main function. Loops through all areas that X's should be marked and stores/checks it
+  var rangeAttendance = SpreadsheetApp.getActive().getRangeByName("AttendanceMarks");
+  var valuesAttendance = rangeAttendance.getValues();
+  let i = 0;
+  let j = 0;
+  Logger.log(JSON.stringify(valuesAttendance));
+   valuesAttendance.forEach(function(row) {
+     row.forEach(function(col) {
+      if(valuesAttendance[j][i] === 'X' || valuesAttendance[j][i] === 'x') { //j is the row, i is the column (I think)
+            checkDate_sendEmail(j, i); //this will check for the date, then send the email. Pass j in to get row for email, pass i in to get column for date
+            //Logger.log("test" + i); //use this for testing
+      }
+      i += 1;
+    });
+    j+=1;
+    i=0;
+   });
+}
+
+function checkDate_sendEmail(j, i) {
+  var sheet = SpreadsheetApp.getActiveSheet();
+
+  var tempj = j + 3; //use tempj to figure out who to email
+  var email = sheet.getRange('B'+ tempj);
+  var emailContent = email.getValue();
+
+  var tempi = findi(i); //use tempi to figure out reminder Date
+  var date = sheet.getRange(tempi + '12');
+  var dateContentReminder = date.getValue();
+  dateContentReminder.setDate(dateContentReminder.getDate()-1);
+  var today = new Date(); //need to get rid of time so i can make this recurring
+
+  //set today and dateContentReminder to strings and substrings to compare their dates without time being a factor
+  //we can't have time in our date because this script will run daily, but we can't specify what time, so we need to check only based on date
+  var stringReminder = dateContentReminder.toString();
+  var stringToday = today.toString();
+  stringReminder = stringReminder.substring(0,15)
+  stringToday = stringToday.substring(0,15)
+  //console.log(stringToday === stringReminder); //use this for testing
+
+  if(stringToday === stringReminder){
+    MailApp.sendEmail(
+          emailContent,
+          "Cougarettes Event Tomorrow!",
+          "You signed up to attend a Cougarettes event tomorrow. Please check the groupme for details about time and place. If you can't attend, please find another officer to take your place. Looking forward to tomorrow!");
+  }
+}
+
+function findi(i){ //this function maps the i value (where the X's are marked for attendance) to a letter value to check for the right Event Date
+  var result;
+
+  switch(i){
+    case 0:
+     result = 'C';
+     break;
+    case 1:
+     result = 'D';
+     break;
+    case 2:
+     result = 'E';
+     break;
+    case 3:
+     result = 'F';
+     break;
+    case 4:
+      result = 'G';
+      break;
+    case 5:
+      result = 'H';
+      break;
+    case 6:
+     result = 'I';
+     break;
+    case 7:
+     result = 'J';
+     break;
+    case 8:
+     result = 'K';
+     break;
+    case 9:
+     result = 'L';
+     break;
+    case 10:
+     result = 'M';
+     break;
+    case 11:
+     result = 'N';
+     break;
+    case 12:
+     result = 'O';
+     break;
+    case 13:
+     result = 'P';
+     break;
+    case 14:
+     result = 'Q';
+     break;
+    case 15:
+     result = 'R';
+     break;
+    case 16:
+     result = 'S';
+     break;
+    case 17:
+     result = 'T';
+     break;
+    case 18:
+     result = 'U';
+     break;
+    case 19:
+     result = 'V';
+     break;
+    case 20:
+     result = 'W';
+     break;
+    case 21:
+     result = 'X';
+     break;
+    case 22:
+     result = 'Y';
+     break;
+    case 23:
+     result = 'Z';
+     break;
+    default:
+      result = 'B';
+  }
+  return result;
+}
