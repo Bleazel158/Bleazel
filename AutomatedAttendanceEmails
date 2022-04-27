@@ -46,12 +46,22 @@ function checkDate_sendEmail(j, i) {
   stringReminder = stringReminder.substring(0,15)
   stringToday = stringToday.substring(0,15)
   //console.log(stringToday === stringReminder); //use this for testing
-
+ 
   if(stringToday === stringReminder){
+    var eventTimeTemp = sheet.getRange(tempi + '13');
+    var eventTime = eventTimeTemp.getDisplayValue();
+    var stringTime = eventTime.toString(); //turn time into a string value
+    if (stringTime > "12:00"){
+        stringTime += " PM";
+    }
+    var eventNameTemp = sheet.getRange(tempi + '2');
+    var eventName = eventNameTemp.getValue();
+
+    //Logger.log(eventName + " " + stringTime); //this is for testing the event name and time
     MailApp.sendEmail(
           emailContent,
           "Cougarettes Event Tomorrow!",
-          "You signed up to attend a Cougarettes event tomorrow. Please check the groupme for details about time and place. If you can't attend, please find another officer to take your place. Looking forward to tomorrow!");
+          "You signed up to attend " + eventName + ", an event happening tomorrow with Cougarettes at " + stringTime + ". Please check the groupme for details about meeting up with the other officers. If you can't attend, you'll need to find another officer to take your place. Looking forward to tomorrow!");
   }
 }
 
