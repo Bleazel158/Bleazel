@@ -40,7 +40,7 @@ function checkDate_sendEmail(j, i) {
   var today = new Date(); //need to get rid of time so i can make this recurring
 
   //set today and dateContentReminder to strings and substrings to compare their dates without time being a factor
-  //we can't have time in our date because this script will run daily, but we can't specify what time, so we need to check only based on date
+  //we can't have time in our date because this script will run daily, but we can't specify what time the trigger occurs, so we need to check only based on date
   var stringReminder = dateContentReminder.toString();
   var stringToday = today.toString();
   stringReminder = stringReminder.substring(0,15)
@@ -51,17 +51,20 @@ function checkDate_sendEmail(j, i) {
     var eventTimeTemp = sheet.getRange(tempi + '13');
     var eventTime = eventTimeTemp.getDisplayValue();
     var stringTime = eventTime.toString(); //turn time into a string value
-    if (stringTime > "12:00"){
+    if (stringTime > "12:59"){
         stringTime += " PM";
     }
     var eventNameTemp = sheet.getRange(tempi + '2');
     var eventName = eventNameTemp.getValue();
 
     //Logger.log(eventName + " " + stringTime); //this is for testing the event name and time
-    MailApp.sendEmail(
-          emailContent,
-          "Cougarettes Event Tomorrow!",
-          "You signed up to attend " + eventName + ", an event happening tomorrow with Cougarettes at " + stringTime + ". Please check the groupme for details about meeting up with the other officers. If you can't attend, you'll need to find another officer to take your place. Looking forward to tomorrow!");
+    var text = "You signed up to attend " + eventName + ", an event happening tomorrow with Cougarettes at " + stringTime + ". Please check the groupme for details about meeting up with the other officers. If you can't attend, you'll need to find another officer to take your place. Looking forward to tomorrow!";
+    var htmlText = text.replace(/\n/g,'\n<br>'); //this is needed to prevent weird line breaks in the body of the email
+      MailApp.sendEmail({
+        to: emailContent,
+        subject: "Cougarettes Event Tomorrow!", 
+        htmlBody: htmlText,
+      });
   }
 }
 
